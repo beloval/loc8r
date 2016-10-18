@@ -1,6 +1,6 @@
 var mongoose= require('mongoose');
 
-var dbURI = 'mongodb://xu/Loc8r';
+var dbURI = 'mongodb://xu/loc8r';
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'production') {
 //dbURI ='mongodb://belov:b41967200@ds019936.mlab.com:19936/loc8r_of_belov';
