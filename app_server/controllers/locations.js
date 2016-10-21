@@ -28,6 +28,7 @@ var renderHomepage = function(req, res, data) {
         message : message });}
 
     module.exports.homelist = function (req, res) {
+        
         var requestOptions, path;
         path = '/api/locations';
         console.log(apiOptions.server + path);
