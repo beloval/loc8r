@@ -3,16 +3,29 @@ var mongoose = require('mongoose');
 var Loc = mongoose.model('Location');
 	var theEarth = (function(){
 	var earthRadius = 6371; // km, miles is 3959
+	
 	var getDistanceFromRads = function(rads) {
 	return parseFloat(rads * earthRadius);
 };
-var getRadsFromDistance = function(distance) {
+	var getRadsFromDistance = function(distance) {
 	return parseFloat(distance / earthRadius);
 };
 return {
 	getDistanceFromRads : getDistanceFromRads,
 	getRadsFromDistance : getRadsFromDistance
 };
+})();
+var meterConversion = (function() {
+    var mToKm = function(distance) {
+        return parseFloat(distance / 1000);
+    };
+    var kmToM = function(distance) {
+        return parseFloat(distance * 1000);
+    };
+    return {
+        mToKm : mToKm,
+        kmToM : kmToM
+    };
 })();
 
 module.exports.locationsListByDistance = function(req, res) {
@@ -23,12 +36,12 @@ module.exports.locationsListByDistance = function(req, res) {
 		type: "Point",
 		coordinates: [lng, lat]
 	};
-	
 	var geoOptions = {
 		spherical: true,
-		maxDistance: theEarth.getRadsFromDistance(maxDist),
+		maxDistance:  meterConversion.kmToM(maxDist),//theEarth.getRadsFromDistance(maxDist),
 		num: 10
 	};
+
 	if ((!lng && lng!==0) || (!lat && lat!==0)) {
 		sendJsonResponse(res, 404, {
 			"message": "lng and lat query parameters are required"
@@ -39,10 +52,11 @@ module.exports.locationsListByDistance = function(req, res) {
 		var locations = [];
 		if (err) {
 			sendJsonResponse(res, 404, err);
-		} else {
+		} else {				
 			results.forEach(function(doc) {
+				console.log(doc);
 				locations.push({
-					distance: theEarth.getDistanceFromRads(doc.dis),
+					distance: meterConversion.mToKm(doc.dis), //theEarth.getDistanceFromRads(doc.dis),
 					name: doc.obj.name,
 					address: doc.obj.address,
 					rating: doc.obj.rating,

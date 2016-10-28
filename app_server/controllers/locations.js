@@ -6,7 +6,7 @@ server : 'http://localhost:3000'
 if (process.env.NODE_ENV === 'production') {
 apiOptions.server = "https://limitless-thicket-11066.herokuapp.com";
 }
-var renderHomepage = function(req, res, data) {
+var renderHomepage1 = function(req, res, data) {
     var message;
     if (!(data instanceof Array) ){
         message = 'API lookup error'
@@ -27,7 +27,7 @@ var renderHomepage = function(req, res, data) {
         locations: data, 
         message : message });}
 
-    module.exports.homelist = function (req, res) {
+    module.exports.homelist1 = function (req, res) {
         
         var requestOptions, path;
         path = '/api/locations';
@@ -83,6 +83,7 @@ var renderDetailPage = function (req, res, locDetail){
 }
 module.exports.locationInfo = function(req, res){
     getLocationInfo(req, res, function(req, res, responseData) {
+        console.log(responseData);
         renderDetailPage(req, res, responseData);
     });
 };
@@ -170,4 +171,17 @@ var getLocationInfo = function (req, res, callback) {
             }
         }
         );
+};
+module.exports.homelist = function(req, res){
+    renderHomepage(req, res);
+}; 
+var renderHomepage = function(req, res){
+    res.render('locations-listangular', {
+        title: 'Loc8r - find a place to work with wifi',
+        pageHeader: {
+            title: 'Loc8r',
+            strapline: 'Find places to work with wifi near you!'
+        },
+        sidebar: 'Looking for wifi and a seat? Loc8r helps you find places to  work when out and about. Perhaps with coffee, cake or a pint? Let Loc8r help you find the place youre looking for.'
+            });
 };
