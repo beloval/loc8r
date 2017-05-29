@@ -9,24 +9,31 @@ var fs = require('fs');
 
 require('./app_server/models/db');
 
-var routes = require('./app_server/routes/index');
+//var routes = require('./app_server/routes/index');
 var routesApi = require('./app_api/routes/index');
+
+
 var users = require('./app_server/routes/users');
 
 var app = express();
 
-
 // view engine setup
-app.set('views', path.join(__dirname, 'app_server', 'views'));
-app.set('view engine', 'jade');
+//app.set('views', path.join(__dirname, 'app_server', 'views'));
+//app.set('view engine', 'jade');
 //uglify all js
 var appClientFiles = [
 'app_client/app.js',
 'app_client/home/home.controller.js',
+'app_client/about/about.controller.js',
+'app_client/locationDetail/locationDetail.controller.js',
 'app_client/common/services/geolocation.service.js',
 'app_client/common/services/loc8rData.service.js',
 'app_client/common/filters/formatDistance.filter.js',
-'app_client/common/directives/ratingStars/ratingStars.directive.js'
+'app_client/common/filters/addHtmlLineBreaks.filter.js', 
+'app_client/common/directives/ratingStars/ratingStars.directive.js', 
+'app_client/common/directives/footerGeneric/footerGeneric.directive.js', 
+'app_client/common/directives/navigation/navigation.directive.js',
+'app_client/common/directives/pageHeader/pageHeader.directive.js'
 ];
 var uglified = uglifyJs.minify(appClientFiles, { compress : false });
 fs.writeFile('public/angular/loc8r.min.js', uglified.code, function (err){
@@ -48,8 +55,11 @@ app.use(function (req, res, next) {
   res.setHeader('X-Powered-By', 'Loc8r')
   next()
 });
-app.use('/', routes);
+//app.use('/', routes);
 app.use('/api', routesApi);
+app.use(function(req, res) {
+res.sendfile(path.join(__dirname, 'app_client', 'index.html'));
+});
 app.use('/users', users);
 
 // catch 404 and forward to error handler
