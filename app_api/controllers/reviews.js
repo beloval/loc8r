@@ -3,6 +3,7 @@ var Loc = mongoose.model('Location');
 
 
 module.exports.reviewsCreate = function(req, res) {
+	getAuthor(req, res, function (req, res, userName) {
 	var locationid = req.params.locationid;
 	if (locationid) {
 		Loc
@@ -22,6 +23,7 @@ module.exports.reviewsCreate = function(req, res) {
 		"message": "Not found, locationid required"
 	});
 }
+});
 };
 
 module.exports.reviewsReadOne = function(req, res) { 
@@ -177,7 +179,7 @@ var doAddReview = function(req, res, location) {
 		});
 	} else {
 		location.reviews.push({
-			author: req.body.author,
+			author: author,
 			rating: req.body.rating,
 			reviewText: req.body.reviewText
 		});
@@ -221,5 +223,29 @@ var doSetAverageRating = function(location) {
 				console.log("Average rating updated to", ratingAverage);
 			}
 		});
+	}
+};
+var User = mongoose.model('User');
+var getAuthor = function(req, res, callback) {
+	if (req.payload && req.payload.email) {
+		User
+		.findOne({ email : req.payload.email })
+		.exec(function(err, user) {
+			if (!user) {
+				sendJSONresponse(res, 404, {
+					"message": "User not found"
+				});
+				return;
+			} else if (err) {
+				console.log(err);
+				sendJSONresponse(res, 404, err);
+				return;
+			}callback(req, res, user.name);
+		});
+	} else {
+		sendJSONresponse(res, 404, {
+			"message": "User not found"
+		});
+		return;
 	}
 };
